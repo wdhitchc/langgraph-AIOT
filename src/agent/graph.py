@@ -17,9 +17,10 @@ async def IDA_agent(state: State, config: RunnableConfig) -> Dict[str, Any]:
     runnable = ida_agent_prompt | chat_model
     response = cast(BrainIteration, await runnable.ainvoke(get_ida_prompt_variables(state)))
     return {
-        "messages": [HumanMessage(content='Inner Cognitive brain: ' + response.self_thought)],
+        "messages": [HumanMessage(content= response.self_thought)],
         "sender" : ["IDA_agent"],
-        "is_final": response.iteration_stop
+        "is_final": response.iteration_stop,
+        'iteration': state.iteration
     }
 
 async def LLM_agent(state: State, config: RunnableConfig) -> Dict[str, Any]:
@@ -29,7 +30,8 @@ async def LLM_agent(state: State, config: RunnableConfig) -> Dict[str, Any]:
     return {
         "messages": [AIMessage(content=response.response)],
         "sender" : ["LLM_agent"],
-        "is_final": response.answer_to_query
+        "is_final": response.answer_to_query,
+        "iteration": state.iteration + 1
     }
 
 async def router(state: State, config: RunnableConfig) -> Dict[str, Any]:

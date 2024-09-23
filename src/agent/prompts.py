@@ -52,12 +52,10 @@ brain_iteration_prompt_template = (
 llm_agent_iteration_prompt_template = (
     "{formatted_messages}\n"
     # "Inner cognitive Brain: {brain_thought}\n"
-    "Respond to the brain's prompt for the query, indicating if it's the final correct answer to the query.\n"
-    "If you are unsure, please iterate with the brain. we are currently on iteration {iteration} Make sure you answer within maximum {max_iterations} iterations.\n\n"
+    "Respond to the Cognitive Reflection Agent, indicating if it's the final correct answer to the query.\n"
+    "If you are unsure, please iterate with the brain. we are currently on iteration {iteration}. Make sure you answer within maximum {max_iterations} iterations.\n\n"
     # "Original query: {user_input}\n"  # Mapping query to user_input
 )
-
-
 
 
 llm_agent_prompt = ChatPromptTemplate.from_messages(

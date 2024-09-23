@@ -30,8 +30,8 @@ class State(InputState):
     messages: Annotated[list[AnyMessage], add_messages]
     is_final: bool = False
     sender: Annotated[list[str], operator.concat]
-    iteration: Annotated[int, operator.add] = field(default=0)
-    max_iterations: int = 5
+    iteration: int = field(default=1)
+    max_iterations: int = 10
 
 
     def format_prompt_history_for_prompt(self):
@@ -41,12 +41,12 @@ class State(InputState):
         for i in range(0, len(self.messages), 2):  # Step through the messages in pairs
             # Check if there is a corresponding LLM message after the agent's message
             agent_message = self.messages[i].content
-            llm_message = self.messages[i + 1].content if i + 1 < len(self.messages) else "No response yet"
-
             # Append the current iteration's messages to the prompt history
-            prompt_history += f"Iteration {i//2 + 1} / {self.max_iterations} \n"
-            prompt_history += f"Cognitive Reflection Agent: {agent_message}\n"
-            prompt_history += f"LLM answer: {llm_message}\n\n"
+            prompt_history += f"**Iteration** {i//2 + 1} / {self.max_iterations} "
+            prompt_history += f"Cognitive Reflection Agent: {agent_message}\n\n\n"
+            if i + 1 < len(self.messages):
+             llm_message = self.messages[i + 1].content
+             prompt_history += f"LLM answer: {llm_message}\n\n\n"
         
         return prompt_history
     
