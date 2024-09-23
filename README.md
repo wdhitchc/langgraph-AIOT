@@ -2,7 +2,8 @@
 # FUNCTIONAL BUT IN PROGRESs
  - TODO ITEMS:
   - [ ] Add more tests
-  - [X] fix configuration (specifically max iterations)
+  - [ ] fix configuration (specifically max iterations)
+  - [x] Fix Prompting issues
   - [ ] Refactor state for more efficient prompt history calculation
 
 # IoT Langgraph Implementation
