@@ -3,7 +3,8 @@
  - TODO ITEMS:
   - [ ] Add more tests
   - [ ] fix configuration (specifically max iterations)
-  - [ ] Refactor state for more efficient prompt history calculation
+  - [ ] Correct prompt history calculation
+  - [ ] Refactor state for more efficient prompt history calculation 
 
 # IoT Langgraph Implementation
 
