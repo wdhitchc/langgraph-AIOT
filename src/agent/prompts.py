@@ -43,7 +43,7 @@ llm_agent_system_prompt = (
 
 brain_iteration_prompt_template = (
     "{formatted_messages}\n"
-    "Current Iteration: {iteration}\n"
+    # "Current Iteration: {iteration}\n"
     "Make the LLM answer within a maximum of {max_iterations} iterations.\n\n"
     "Ideate first with the LLM and guide the LLM towards the answer, considering the remaining iterations.\n"
     "Talk and prompt the LLM in second person directly as if you are discussing with the LLM to guide it towards the answer.\n"
@@ -52,9 +52,14 @@ brain_iteration_prompt_template = (
 llm_agent_iteration_prompt_template = (
     "{formatted_messages}\n"
     # "Inner cognitive Brain: {brain_thought}\n"
-    "Respond to the Cognitive Reflection Agent, indicating if it's the final correct answer to the query.\n"
+    "Respond to the Cognitive Reflection Agent (Inner Cognitive Brain), indicating if it's the final correct answer to the initial query.\n"
     "If you are unsure, please iterate with the brain. we are currently on iteration {iteration}. Make sure you answer within maximum {max_iterations} iterations.\n\n"
     # "Original query: {user_input}\n"  # Mapping query to user_input
+)
+
+gen_final_answer_prompt_template = (
+    "Given the following conversation history please answer the orignial query to the best in a final, formal,  and complete manner. "
+    "{formatted_messages}"
 )
 
 
@@ -72,6 +77,13 @@ ida_agent_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+gen_final_answer_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You are a helpful and polite assistant."),
+        ("human", gen_final_answer_prompt_template),
+    ]
+)
+
 
 def get_ida_prompt_variables(state: State, max_iterations: int = 10) -> Dict[str, Any]:
     return {'formatted_messages' : state.format_prompt_history_for_prompt(),
@@ -86,3 +98,7 @@ def get_llm_agent_prompt_variables(state: State, max_iterations: int = 10) -> Di
             'user_input': state.user_input,
             'max_iterations': max_iterations,
             'iteration': state.iteration}
+
+
+def get_gen_final_answer_prompt_variables(state: State) -> Dict[str, Any]:
+    return {'formatted_messages': state.format_prompt_history_for_prompt()}

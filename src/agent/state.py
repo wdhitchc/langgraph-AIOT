@@ -42,7 +42,7 @@ class State(InputState):
             # Check if there is a corresponding LLM message after the agent's message
             agent_message = self.messages[i].content
             # Append the current iteration's messages to the prompt history
-            prompt_history += f"**Iteration** {i//2 + 1} / {self.max_iterations} "
+            prompt_history += f"**Iteration** {i//2 + 1} / {self.max_iterations}"
             prompt_history += f"Cognitive Reflection Agent: {agent_message}\n\n\n"
             if i + 1 < len(self.messages):
              llm_message = self.messages[i + 1].content

@@ -21,11 +21,12 @@ This project was build using the template: https://github.com/langchain-ai/new-l
 The core logic is defined in `src/agent/graph.py` AIOT
 
 ## What it does
-This is a basic langgraph implementation of https://arxiv.org/abs/2409.12618.
+This is a basic langgraph implementation of https://arxiv.org/abs/2409.12618. With Several modications. 
 
-I have not validated that it performs exactly as the official implementation here https://github.com/AgnostiqHQ/multi-agent-llm
+I have not validated it performs as well as the official implementation here https://github.com/AgnostiqHQ/multi-agent-llm
 
-I will be adding more documentation at a later date.
+I have added several modifications to the original implementation:
+ - Final Answer Synthesis
 
 
 

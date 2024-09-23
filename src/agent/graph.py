@@ -3,7 +3,7 @@ from typing import Any, Dict, cast
 from agent.utils import init_model
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import StateGraph
-from agent.prompts import llm_agent_prompt, ida_agent_prompt, get_ida_prompt_variables, get_llm_agent_prompt_variables
+from agent.prompts import llm_agent_prompt, ida_agent_prompt, gen_final_answer_prompt, get_ida_prompt_variables, get_llm_agent_prompt_variables, get_gen_final_answer_prompt_variables
 from agent.configuration import Configuration 
 from agent.state import InputState, OutputState, State
 from agent.node_response_models import BrainIteration, LLMResponse, GraphOutput
@@ -34,13 +34,27 @@ async def LLM_agent(state: State, config: RunnableConfig) -> Dict[str, Any]:
         "iteration": state.iteration + 1
     }
 
+async def final_answers(state: State, config: RunnableConfig) -> GraphOutput:
+    chat_model = init_model().with_structured_output(GraphOutput)
+    runnable =  gen_final_answer_prompt | chat_model
+    response = cast(GraphOutput, await runnable.ainvoke((get_gen_final_answer_prompt_variables(state))))
+    return {
+        "messages": [AIMessage(content=response.llm_response_answer)],
+        "sender" : ["final_answer"],
+        "is_final": True,
+        "iteration": state.iteration + 1
+    }
+
 async def router(state: State, config: RunnableConfig) -> Dict[str, Any]:
 
-    if state.is_final == True or state.iteration > max_iterations:
+    if state.sender[-1] == "final_answer":
+        return "__end__"
+
+    elif state.is_final == True or state.iteration > max_iterations:
         # Any agent decided the work is done, or max iterations has been reached
 
         #this may be the appropriate way to do this in langgraph
-        return "__end__"
+        return "FINAL_answer"
     
     elif state.sender[-1] == "IDA_agent":
         return "LLM_agent"
@@ -54,11 +68,13 @@ workflow = StateGraph(State, input=InputState, output=OutputState, config_schema
 # Add the node to the graph
 workflow.add_node("IDA_agent", IDA_agent)
 workflow.add_node("LLM_agent", LLM_agent)
+workflow.add_node("FINAL_answer", final_answers)
 
 
 workflow.add_edge('__start__', 'IDA_agent')
 workflow.add_conditional_edges("IDA_agent", router)
 workflow.add_conditional_edges("LLM_agent", router)
+workflow.add_conditional_edges("FINAL_answer", router)
 
 
 # Compile the workflow into an executable graph
